@@ -6,195 +6,104 @@ import pickle
 
 
 # =========================================================
-# CONFIGURACIÓN DE LA PÁGINA
+# CONFIGURACIÓN
 # =========================================================
 
 st.set_page_config(
     page_title="MediPredict | Cáncer de Mama",
     page_icon="🎗️",
-    layout="wide",
-    initial_sidebar_state="collapsed"
+    layout="wide"
 )
 
 
 # =========================================================
-# ESTILOS PERSONALIZADOS
+# DISEÑO
 # =========================================================
 
 st.markdown("""
 <style>
 
-    /* Fondo general */
+    /* Fondo */
     .stApp {
         background-color: #f7f9fc;
     }
 
-    /* Ocultar menú y footer de Streamlit */
-    #MainMenu {
-        visibility: hidden;
-    }
-
-    footer {
-        visibility: hidden;
-    }
-
-    /* Contenedor principal */
+    /* Ancho */
     .block-container {
         max-width: 1200px;
         padding-top: 2rem;
         padding-bottom: 3rem;
     }
 
-    /* Encabezado */
-    .hero {
-        background: linear-gradient(
-            135deg,
-            #f4017c 0%,
-            #c90066 100%
-        );
-
-        padding: 35px 40px;
-        border-radius: 24px;
-        color: white;
-        margin-bottom: 30px;
-        box-shadow: 0 10px 30px rgba(244, 1, 124, 0.18);
-    }
-
-    .hero h1 {
-        font-size: 42px;
-        margin-bottom: 8px;
-        font-weight: 700;
-    }
-
-    .hero p {
-        font-size: 17px;
-        margin: 0;
-        opacity: 0.95;
-    }
-
-    /* Tarjetas */
-    .card {
-        background: white;
-        padding: 25px;
-        border-radius: 20px;
-        border: 1px solid #e8edf3;
-        box-shadow: 0 5px 18px rgba(0, 0, 0, 0.05);
-        margin-bottom: 20px;
-    }
-
-    .card-title {
-        font-size: 21px;
-        font-weight: 700;
-        color: #263238;
-        margin-bottom: 5px;
-    }
-
-    .card-description {
-        color: #718096;
-        font-size: 14px;
-        margin-bottom: 20px;
-    }
-
-    /* Botón */
-    .stButton > button {
-        width: 100%;
-        border-radius: 14px;
-        height: 52px;
+    /* Título */
+    .titulo-principal {
         background: linear-gradient(
             135deg,
             #f4017c,
-            #d9006f
+            #c90066
         );
+        padding: 35px;
+        border-radius: 20px;
         color: white;
-        border: none;
-        font-size: 17px;
-        font-weight: 700;
-        transition: 0.2s;
+        margin-bottom: 25px;
     }
 
-    .stButton > button:hover {
-        background: linear-gradient(
-            135deg,
-            #d9006f,
-            #b8005d
-        );
-        transform: translateY(-1px);
+    .titulo-principal h1 {
+        color: white;
+        font-size: 40px;
+        margin-bottom: 5px;
+    }
+
+    .titulo-principal p {
+        color: white;
+        font-size: 17px;
+    }
+
+    /* Tarjetas */
+    .tarjeta {
+        background-color: white;
+        padding: 25px;
+        border-radius: 18px;
+        border: 1px solid #e5e9ef;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
     }
 
     /* Resultado */
-    .result-card {
-        background: linear-gradient(
-            135deg,
-            #fff0f8,
-            #ffffff
-        );
-
+    .resultado {
+        background-color: #fff0f8;
         border: 2px solid #f4017c;
+        border-radius: 20px;
         padding: 30px;
-        border-radius: 22px;
         text-align: center;
         margin-top: 25px;
         margin-bottom: 25px;
     }
 
-    .result-label {
+    .resultado h2 {
         color: #718096;
-        font-size: 15px;
-        margin-bottom: 8px;
+        font-size: 16px;
     }
 
-    .result-value {
+    .resultado h1 {
         color: #c90066;
         font-size: 32px;
-        font-weight: 800;
     }
 
-    /* Información */
-    .info-box {
-        background-color: #eef7ff;
-        border-left: 5px solid #3498db;
-        padding: 17px 20px;
+    /* Botón */
+    .stButton > button {
+        background-color: #f4017c;
+        color: white;
         border-radius: 12px;
-        color: #34495e;
-        margin-bottom: 25px;
+        height: 50px;
+        font-size: 17px;
+        font-weight: bold;
+        border: none;
     }
 
-    /* Métricas */
-    .metric-card {
-        background: white;
-        padding: 20px;
-        border-radius: 17px;
-        border: 1px solid #e8edf3;
-        text-align: center;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
-    }
-
-    .metric-title {
-        font-size: 13px;
-        color: #718096;
-        margin-bottom: 6px;
-    }
-
-    .metric-value {
-        font-size: 23px;
-        font-weight: 700;
-        color: #263238;
-    }
-
-    /* Separadores */
-    .section-space {
-        margin-top: 20px;
-        margin-bottom: 10px;
-    }
-
-    /* Footer */
-    .footer {
-        text-align: center;
-        color: #8a94a6;
-        font-size: 13px;
-        margin-top: 40px;
-        padding-top: 20px;
-        border-top: 1px solid #e5e9ef;
+    .stButton > button:hover {
+        background-color: #c90066;
+        color: white;
     }
 
 </style>
@@ -215,13 +124,11 @@ label_encoder = pickle.load(
 
 
 # =========================================================
-# CARGAMOS LOS DATOS ZIP
+# CARGAMOS DATOS ZIP
 # =========================================================
 
 zip_data = pd.read_csv("zip_completo.csv")
 
-
-# Convertimos las variables numéricas
 
 columnas_numericas = [
     columna
@@ -229,11 +136,14 @@ columnas_numericas = [
     if columna != "patient_zip3"
 ]
 
+
 for columna in columnas_numericas:
+
     zip_data[columna] = pd.to_numeric(
         zip_data[columna],
         errors="coerce"
     )
+
 
 zip_data["patient_zip3"] = pd.to_numeric(
     zip_data["patient_zip3"],
@@ -245,69 +155,56 @@ zip_data["patient_zip3"] = pd.to_numeric(
 # ENCABEZADO
 # =========================================================
 
-st.markdown("""
-<div class="hero">
+st.markdown(
+    """
+    <div class="titulo-principal">
+    """,
+    unsafe_allow_html=True
+)
 
-    <h1>🎗️ MediPredict</h1>
+st.title("🎗️ MediPredict")
 
-    <p>
-        Sistema de apoyo para la predicción del tipo de
-        metástasis en pacientes con cáncer de mama.
-    </p>
+st.write(
+    "Sistema de apoyo para la predicción del tipo de "
+    "metástasis en pacientes con cáncer de mama."
+)
 
-</div>
-""", unsafe_allow_html=True)
+st.markdown(
+    "</div>",
+    unsafe_allow_html=True
+)
 
 
 # =========================================================
 # INFORMACIÓN
 # =========================================================
 
-st.markdown("""
-<div class="info-box">
-
-<strong>¿Cómo funciona?</strong><br>
-
-Ingrese los datos básicos del paciente. El sistema utiliza
-el código ZIP3 para recuperar automáticamente las variables
-socioeconómicas asociadas a esa zona y posteriormente realiza
-la predicción mediante un modelo de Random Forest.
-
-</div>
-""", unsafe_allow_html=True)
+st.info(
+    "💡 Ingrese los datos básicos del paciente. "
+    "El sistema utilizará el código ZIP3 para obtener "
+    "automáticamente las variables socioeconómicas "
+    "asociadas a esa zona."
+)
 
 
 # =========================================================
 # FORMULARIO
 # =========================================================
 
-col_izquierda, col_derecha = st.columns(
-    [1, 1],
-    gap="large"
-)
+col1, col2 = st.columns(2)
 
 
 # =========================================================
 # DATOS DEL PACIENTE
 # =========================================================
 
-with col_izquierda:
+with col1:
 
-    st.markdown("""
-    <div class="card">
+    st.subheader("👤 Información del paciente")
 
-        <div class="card-title">
-            👤 Información del paciente
-        </div>
-
-        <div class="card-description">
-            Ingrese los datos básicos necesarios para realizar
-            la predicción.
-        </div>
-
-    </div>
-    """, unsafe_allow_html=True)
-
+    st.write(
+        "Ingrese los datos básicos necesarios."
+    )
 
     zip3 = st.number_input(
         "📍 Código ZIP3",
@@ -343,26 +240,17 @@ with col_izquierda:
 # INFORMACIÓN CLÍNICA
 # =========================================================
 
-with col_derecha:
+with col2:
 
-    st.markdown("""
-    <div class="card">
+    st.subheader("🔬 Información clínica")
 
-        <div class="card-title">
-            🔬 Información clínica
-        </div>
-
-        <div class="card-description">
-            Seleccione el código correspondiente al diagnóstico
-            de cáncer de mama.
-        </div>
-
-    </div>
-    """, unsafe_allow_html=True)
+    st.write(
+        "Seleccione el código correspondiente."
+    )
 
 
     Diagnostico = st.selectbox(
-        "🧬 Código de diagnóstico",
+        "🧬 Código de diagnóstico de cáncer de mama",
         [
             "C50919",
             "C50411",
@@ -421,39 +309,24 @@ with col_derecha:
 
 
 # =========================================================
-# INFORMACIÓN AUTOMÁTICA DEL ZIP
+# VARIABLES SOCIOECONÓMICAS
 # =========================================================
 
-st.markdown(
-    '<div class="section-space"></div>',
-    unsafe_allow_html=True
+st.divider()
+
+st.subheader("📍 Variables socioeconómicas")
+
+st.write(
+    "Estas variables no deben ser ingresadas manualmente. "
+    "El sistema las obtiene automáticamente a partir del ZIP3."
 )
 
-st.markdown("""
-<div class="card">
-
-    <div class="card-title">
-        📍 Variables socioeconómicas
-    </div>
-
-    <div class="card-description">
-        No es necesario ingresar estas variables manualmente.
-        El sistema las obtiene automáticamente utilizando el
-        código ZIP3 seleccionado.
-    </div>
-
-</div>
-""", unsafe_allow_html=True)
-
 
 # =========================================================
-# BOTÓN DE PREDICCIÓN
+# BOTÓN
 # =========================================================
 
-st.markdown(
-    '<div class="section-space"></div>',
-    unsafe_allow_html=True
-)
+st.divider()
 
 if st.button(
     "🔮 REALIZAR PREDICCIÓN",
@@ -479,13 +352,11 @@ if st.button(
         st.stop()
 
 
-    # Primer registro
-
     datos_zip = datos_zip.iloc[0]
 
 
     # =====================================================
-    # CREAR DATOS
+    # DATOS
     # =====================================================
 
     datos = [[
@@ -595,10 +466,6 @@ if st.button(
     Y_pred = modelo.predict(data)
 
 
-    # =====================================================
-    # CONVERTIR RESULTADO
-    # =====================================================
-
     resultado = label_encoder.inverse_transform(
         Y_pred
     )
@@ -608,23 +475,33 @@ if st.button(
     # RESULTADO
     # =====================================================
 
-    st.markdown(f"""
-    <div class="result-card">
+    st.success(
+        "✅ Predicción realizada correctamente"
+    )
 
-        <div class="result-label">
-            RESULTADO DE LA PREDICCIÓN
-        </div>
+    st.markdown(
+        """
+        <div class="resultado">
+        """,
+        unsafe_allow_html=True
+    )
 
-        <div class="result-value">
-            🎗️ {resultado[0]}
-        </div>
+    st.subheader(
+        "🔬 Resultado de la predicción"
+    )
 
-    </div>
-    """, unsafe_allow_html=True)
+    st.header(
+        f"🎗️ {resultado[0]}"
+    )
+
+    st.markdown(
+        "</div>",
+        unsafe_allow_html=True
+    )
 
 
     # =====================================================
-    # DATOS DEL PACIENTE
+    # DATOS UTILIZADOS
     # =====================================================
 
     st.subheader("📋 Datos utilizados")
@@ -635,77 +512,43 @@ if st.button(
 
     with c1:
 
-        st.markdown(f"""
-        <div class="metric-card">
-
-            <div class="metric-title">
-                ZIP3
-            </div>
-
-            <div class="metric-value">
-                {zip3}
-            </div>
-
-        </div>
-        """, unsafe_allow_html=True)
+        st.metric(
+            "📍 ZIP3",
+            zip3
+        )
 
 
     with c2:
 
-        st.markdown(f"""
-        <div class="metric-card">
-
-            <div class="metric-title">
-                Edad
-            </div>
-
-            <div class="metric-value">
-                {Edad}
-            </div>
-
-        </div>
-        """, unsafe_allow_html=True)
+        st.metric(
+            "🎂 Edad",
+            Edad
+        )
 
 
     with c3:
 
-        st.markdown(f"""
-        <div class="metric-card">
-
-            <div class="metric-title">
-                Pagador
-            </div>
-
-            <div class="metric-value">
-                {Payer}
-            </div>
-
-        </div>
-        """, unsafe_allow_html=True)
+        st.metric(
+            "💳 Pagador",
+            Payer
+        )
 
 
     with c4:
 
-        st.markdown(f"""
-        <div class="metric-card">
-
-            <div class="metric-title">
-                Diagnóstico
-            </div>
-
-            <div class="metric-value">
-                {Diagnostico}
-            </div>
-
-        </div>
-        """, unsafe_allow_html=True)
+        st.metric(
+            "🧬 Diagnóstico",
+            Diagnostico
+        )
 
 
     # =====================================================
-    # INFORMACIÓN DEL ZIP
+    # INFORMACIÓN ZIP
     # =====================================================
 
-    st.subheader("📊 Información socioeconómica del ZIP3")
+    st.subheader(
+        "📊 Información socioeconómica"
+    )
 
 
     c1, c2 = st.columns(2)
@@ -749,26 +592,13 @@ if st.button(
             )
 
 
-    # =====================================================
-    # MENSAJE FINAL
-    # =====================================================
-
-    st.success(
-        "✅ La predicción fue realizada correctamente "
-        "utilizando el modelo Random Forest."
-    )
-
-
 # =========================================================
-# FOOTER
+# PIE DE PÁGINA
 # =========================================================
 
-st.markdown("""
-<div class="footer">
+st.divider()
 
-    🎗️ <strong>MediPredict</strong><br>
-    Sistema académico de predicción basado en Machine Learning.<br>
-    Random Forest · Datos clínicos · Variables socioeconómicas
-
-</div>
-""", unsafe_allow_html=True)
+st.caption(
+    "🎗️ MediPredict | Sistema académico de predicción "
+    "basado en Machine Learning · Random Forest"
+)
