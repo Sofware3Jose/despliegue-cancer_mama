@@ -1,32 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import streamlit as st
 import pandas as pd
+import streamlit as st
 import pickle
 
 
-# =========================================================
-# CONFIGURACIÓN
-# =========================================================
-
-st.set_page_config(
-    page_title="Predicción de Metástasis",
-    page_icon="🎗️",
-    layout="centered"
-)
-
-st.title("🎗️ Predicción del Tipo de Metástasis")
-
-st.write(
-    "Ingrese los datos del paciente. "
-    "Las variables socioeconómicas se obtienen automáticamente "
-    "a partir del código ZIP3."
-)
-
-
-# =========================================================
-# CARGAR MODELO Y LABEL ENCODER
-# =========================================================
+# =====================================================
+# CARGAMOS EL MODELO
+# =====================================================
 
 modelo = pickle.load(
     open("modelo_random_forest.pkl", "rb")
@@ -37,312 +18,287 @@ label_encoder = pickle.load(
 )
 
 
-# =========================================================
-# CARGAR DATOS ZIP
-# =========================================================
+# =====================================================
+# CARGAMOS LOS DATOS ZIP
+# =====================================================
 
 zip_data = pd.read_csv("zip_completo.csv")
 
 
-# Asegurar que ZIP3 tenga formato numérico
-zip_data["patient_zip3"] = pd.to_numeric(
-    zip_data["patient_zip3"],
-    errors="coerce"
+# =====================================================
+# INTERFAZ GRÁFICA
+# =====================================================
+
+st.title("🎗️ Predicción del Tipo de Metástasis")
+
+st.write(
+    "Ingrese los datos del paciente. "
+    "Las variables socioeconómicas se obtienen "
+    "automáticamente a partir del código ZIP3."
 )
 
 
-# =========================================================
-# VARIABLES DEL MODELO
-# =========================================================
-
-variables_modelo = [
-    "payer_type",
-    "patient_age",
-    "breast_cancer_diagnosis_code",
-    "population",
-    "density",
-    "age_median",
-    "age_60s",
-    "age_70s",
-    "married",
-    "never_married",
-    "family_size",
-    "income_household_median",
-    "income_household_10_to_15",
-    "income_household_75_to_100",
-    "income_household_100_to_150",
-    "income_household_150_over",
-    "income_household_six_figure",
-    "income_individual_median",
-    "home_ownership",
-    "housing_units",
-    "rent_median",
-    "rent_burden",
-    "education_less_highschool",
-    "education_highschool",
-    "education_bachelors",
-    "education_college_or_above",
-    "labor_force_participation",
-    "unemployment_rate",
-    "self_employed",
-    "farmer",
-    "race_white",
-    "race_other",
-    "race_multiple",
-    "hispanic",
-    "disabled",
-    "poverty",
-    "limited_english",
-    "veteran",
-    "Ozone"
-]
-
-
-# =========================================================
-# OPCIONES
-# =========================================================
-
-payer_options = [
-    "MEDICAID",
-    "COMMERCIAL",
-    "MEDICARE ADVANTAGE",
-    "?"
-]
-
-
-diagnostico_options = [
-    "C50919",
-    "C50411",
-    "C50112",
-    "C50212",
-    "1749",
-    "C50912",
-    "C50512",
-    "1744",
-    "C50412",
-    "C50812",
-    "C50911",
-    "C50312",
-    "C50311",
-    "C50111",
-    "1741",
-    "C5091",
-    "C50811",
-    "1748",
-    "C50511",
-    "1743",
-    "C50211",
-    "C50011",
-    "C5051",
-    "C50012",
-    "C50419",
-    "1742",
-    "C50611",
-    "C50612",
-    "C50119",
-    "C50819",
-    "1746",
-    "C5041",
-    "C50619",
-    "19881",
-    "C5081",
-    "1745",
-    "C50219",
-    "C50319",
-    "C50019",
-    "C50519",
-    "C50929",
-    "C50021",
-    "C5021",
-    "C5011",
-    "C5031",
-    "C509",
-    "C50",
-    "1759",
-    "C5001",
-    "C50421",
-    "C50922",
-    "C50921"
-]
-
-
-# =========================================================
-# INTERFAZ
-# =========================================================
-
-st.subheader("📋 Datos del paciente")
-
+# Datos que ingresa el usuario
 
 zip3 = st.number_input(
     "Código ZIP3",
     min_value=0,
     max_value=999,
     value=100,
-    step=1,
-    help="Ingrese los primeros tres dígitos del código postal."
+    step=1
 )
 
-
-edad = st.number_input(
-    "Edad del paciente",
+Edad = st.number_input(
+    "Edad",
     min_value=0,
     max_value=120,
     value=50,
     step=1
 )
 
-
-payer_type = st.selectbox(
+Payer = st.selectbox(
     "Tipo de pagador",
-    payer_options
+    [
+        "MEDICAID",
+        "COMMERCIAL",
+        "MEDICARE ADVANTAGE",
+        "?"
+    ]
 )
 
-
-diagnostico = st.selectbox(
+Diagnostico = st.selectbox(
     "Código de diagnóstico de cáncer de mama",
-    diagnostico_options
+    [
+        "C50919",
+        "C50411",
+        "C50112",
+        "C50212",
+        "1749",
+        "C50912",
+        "C50512",
+        "1744",
+        "C50412",
+        "C50812",
+        "C50911",
+        "C50312",
+        "C50311",
+        "C50111",
+        "1741",
+        "C5091",
+        "C50811",
+        "1748",
+        "C50511",
+        "1743",
+        "C50211",
+        "C50011",
+        "C5051",
+        "C50012",
+        "C50419",
+        "1742",
+        "C50611",
+        "C50612",
+        "C50119",
+        "C50819",
+        "1746",
+        "C5041",
+        "C50619",
+        "19881",
+        "C5081",
+        "1745",
+        "C50219",
+        "C50319",
+        "C50019",
+        "C50519",
+        "C50929",
+        "C50021",
+        "C5021",
+        "C5011",
+        "C5031",
+        "C509",
+        "C50",
+        "1759",
+        "C5001",
+        "C50421",
+        "C50922",
+        "C50921"
+    ]
 )
 
 
-# =========================================================
-# PREDICCIÓN
-# =========================================================
+# =====================================================
+# BUSCAMOS LA INFORMACIÓN DEL ZIP
+# =====================================================
 
-if st.button(
-    "🔮 Realizar predicción",
-    use_container_width=True
-):
+if st.button("🔮 Realizar predicción"):
 
-    # -----------------------------------------------------
-    # Buscar ZIP3
-    # -----------------------------------------------------
-
-    registro_zip = zip_data[
+    datos_zip = zip_data[
         zip_data["patient_zip3"] == zip3
     ]
 
 
-    if registro_zip.empty:
+    if datos_zip.empty:
 
         st.error(
-            f"El ZIP3 {zip3} no se encuentra en la base de datos."
+            "El ZIP3 ingresado no se encuentra en "
+            "la base de datos."
         )
 
-        st.stop()
+    else:
+
+        # Tomamos la información del ZIP
+        datos_zip = datos_zip.iloc[0]
 
 
-    # Tomamos el primer registro correspondiente al ZIP3
-    datos_zip = registro_zip.iloc[0]
+        # =================================================
+        # CREAMOS EL DATAFRAME
+        # =================================================
+
+        datos = [[
+            Payer,
+            Edad,
+            Diagnostico,
+            datos_zip["population"],
+            datos_zip["density"],
+            datos_zip["age_median"],
+            datos_zip["age_60s"],
+            datos_zip["age_70s"],
+            datos_zip["married"],
+            datos_zip["never_married"],
+            datos_zip["family_size"],
+            datos_zip["income_household_median"],
+            datos_zip["income_household_10_to_15"],
+            datos_zip["income_household_75_to_100"],
+            datos_zip["income_household_100_to_150"],
+            datos_zip["income_household_150_over"],
+            datos_zip["income_household_six_figure"],
+            datos_zip["income_individual_median"],
+            datos_zip["home_ownership"],
+            datos_zip["housing_units"],
+            datos_zip["rent_median"],
+            datos_zip["rent_burden"],
+            datos_zip["education_less_highschool"],
+            datos_zip["education_highschool"],
+            datos_zip["education_bachelors"],
+            datos_zip["education_college_or_above"],
+            datos_zip["labor_force_participation"],
+            datos_zip["unemployment_rate"],
+            datos_zip["self_employed"],
+            datos_zip["farmer"],
+            datos_zip["race_white"],
+            datos_zip["race_other"],
+            datos_zip["race_multiple"],
+            datos_zip["hispanic"],
+            datos_zip["disabled"],
+            datos_zip["poverty"],
+            datos_zip["limited_english"],
+            datos_zip["veteran"],
+            datos_zip["Ozone"]
+        ]]
 
 
-    # -----------------------------------------------------
-    # Crear registro para el modelo
-    # -----------------------------------------------------
+        # =================================================
+        # NOMBRES DE LAS VARIABLES
+        # =================================================
 
-    datos = {}
+        columnas = [
+            "payer_type",
+            "patient_age",
+            "breast_cancer_diagnosis_code",
+            "population",
+            "density",
+            "age_median",
+            "age_60s",
+            "age_70s",
+            "married",
+            "never_married",
+            "family_size",
+            "income_household_median",
+            "income_household_10_to_15",
+            "income_household_75_to_100",
+            "income_household_100_to_150",
+            "income_household_150_over",
+            "income_household_six_figure",
+            "income_individual_median",
+            "home_ownership",
+            "housing_units",
+            "rent_median",
+            "rent_burden",
+            "education_less_highschool",
+            "education_highschool",
+            "education_bachelors",
+            "education_college_or_above",
+            "labor_force_participation",
+            "unemployment_rate",
+            "self_employed",
+            "farmer",
+            "race_white",
+            "race_other",
+            "race_multiple",
+            "hispanic",
+            "disabled",
+            "poverty",
+            "limited_english",
+            "veteran",
+            "Ozone"
+        ]
 
 
-    for variable in variables_modelo:
+        # =================================================
+        # DATAFRAME FINAL
+        # =================================================
 
-        if variable == "payer_type":
-
-            datos[variable] = payer_type
-
-        elif variable == "patient_age":
-
-            datos[variable] = edad
-
-        elif variable == "breast_cancer_diagnosis_code":
-
-            datos[variable] = diagnostico
-
-        else:
-
-            datos[variable] = datos_zip[variable]
+        data = pd.DataFrame(
+            datos,
+            columns=columnas
+        )
 
 
-    # -----------------------------------------------------
-    # DataFrame final
-    # -----------------------------------------------------
+        # =================================================
+        # PREDICCIÓN
+        # =================================================
 
-    data = pd.DataFrame(
-        [datos],
-        columns=variables_modelo
-    )
+        Y_pred = modelo.predict(data)
 
 
-    # -----------------------------------------------------
-    # Predicción
-    # -----------------------------------------------------
-
-    try:
-
-        prediccion = modelo.predict(data)
+        # =================================================
+        # CONVERTIMOS LA PREDICCIÓN A SU NOMBRE
+        # =================================================
 
         resultado = label_encoder.inverse_transform(
-            prediccion.astype(int)
-        )[0]
-
-
-        # -------------------------------------------------
-        # Mostrar resultado
-        # -------------------------------------------------
-
-        st.success(
-            "Predicción realizada correctamente."
+            Y_pred
         )
+
+
+        # =================================================
+        # MOSTRAMOS EL RESULTADO
+        # =================================================
+
+        st.success("Predicción realizada correctamente")
 
         st.subheader("🔬 Resultado")
 
-        st.info(
-            f"**Tipo de metástasis predicho:** {resultado}"
+        st.write(
+            f"### Tipo de metástasis: {resultado[0]}"
         )
 
 
-        # -------------------------------------------------
-        # Información del paciente
-        # -------------------------------------------------
+        # =================================================
+        # MOSTRAMOS LOS DATOS
+        # =================================================
 
         st.subheader("📋 Datos utilizados")
 
-        col1, col2 = st.columns(2)
+        st.write(f"**ZIP3:** {zip3}")
+        st.write(f"**Edad:** {Edad}")
+        st.write(f"**Tipo de pagador:** {Payer}")
+        st.write(f"**Diagnóstico:** {Diagnostico}")
 
-        with col1:
-
-            st.write(
-                f"**ZIP3:** {zip3}"
-            )
-
-            st.write(
-                f"**Edad:** {edad}"
-            )
-
-            st.write(
-                f"**Pagador:** {payer_type}"
-            )
-
-
-        with col2:
-
-            st.write(
-                f"**Diagnóstico:** {diagnostico}"
-            )
-
-            st.write(
-                f"**Población:** "
-                f"{datos_zip['population']:,.0f}"
-            )
-
-            st.write(
-                f"**Densidad:** "
-                f"{datos_zip['density']:,.2f}"
-            )
-
-
-    except Exception as e:
-
-        st.error(
-            "Ocurrió un error al realizar la predicción."
+        st.write(
+            f"**Población del ZIP3:** "
+            f"{datos_zip['population']:,.0f}"
         )
 
-        st.exception(e)
+        st.write(
+            f"**Densidad:** "
+            f"{datos_zip['density']:,.2f}"
+        )
