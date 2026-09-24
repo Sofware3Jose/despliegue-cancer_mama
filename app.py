@@ -11,7 +11,7 @@ import pickle
 
 st.set_page_config(
     page_title="MediPredict | Cáncer de Mama",
-    page_icon="🎗️",
+    page_icon="",
     layout="wide"
 )
 
