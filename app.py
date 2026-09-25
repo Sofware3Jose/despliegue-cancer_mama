@@ -431,7 +431,7 @@ if predecir:
     Y_pred = modelo.predict(data)
     resultado = label_encoder.inverse_transform(Y_pred)
 
-    st.success("Predicción realizada correctamente")
+    st.success("Predicción realizada correctamente. Recuerda que el modelo presenta un porcentaje de error aproximado del 58,78 %.")
 
     st.markdown(f"""
     <div class="resultado-box">
