@@ -230,8 +230,7 @@ with col1:
         [
             "MEDICAID",
             "COMMERCIAL",
-            "MEDICARE ADVANTAGE",
-            "?"
+            "MEDICARE ADVANTAGE"
         ]
     )
 
