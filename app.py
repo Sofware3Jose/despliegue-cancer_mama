@@ -1,328 +1,324 @@
-# -*- coding: utf-8 -*-
 
+App corporativo salud · PY
+# -*- coding: utf-8 -*-
+ 
 import pandas as pd
 import streamlit as st
 import pickle
-
-
+ 
+ 
 # =========================================================
 # CONFIGURACIÓN
 # =========================================================
-
+ 
 st.set_page_config(
     page_title="MediPredict | Cáncer de Mama",
-    page_icon="🎗️",
+    page_icon="M",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
-
-
+ 
+ 
 # =========================================================
-# ESTILOS (DISEÑO MODERNO)
+# ESTILOS — CORPORATIVO SALUD
 # =========================================================
-
+ 
 st.markdown("""
 <style>
-
-    /* ---------- Fuente e importaciones ---------- */
+ 
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
+ 
     html, body, [class*="css"] {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif;
     }
-
-    /* ---------- Variables de color ---------- */
+ 
     :root {
-        --primary: #ec0d7c;
-        --primary-dark: #b3005f;
-        --primary-light: #ff4fa0;
-        --bg: #f6f7fb;
-        --card-bg: #ffffff;
-        --border: #eceef3;
-        --text-dark: #1a1d29;
-        --text-muted: #6b7280;
+        --navy: #0b2545;
+        --navy-dark: #081a33;
+        --teal: #0f9d8b;
+        --teal-dark: #0b7c6e;
+        --bg: #f7f9fb;
+        --line: #e1e6ec;
+        --ink: #12213b;
+        --sub: #63728a;
     }
-
-    /* ---------- Fondo general ---------- */
+ 
     .stApp {
-        background: radial-gradient(circle at top left, #fdf2f8 0%, #f6f7fb 35%);
+        background: var(--bg);
     }
-
-    /* ---------- Ancho del contenedor ---------- */
+ 
     .block-container {
         max-width: 1180px;
-        padding-top: 1.5rem;
+        padding-top: 0rem;
         padding-bottom: 3rem;
     }
-
-    /* ---------- Ocultar elementos por defecto de Streamlit ---------- */
+ 
     #MainMenu, footer, header {visibility: hidden;}
-
-    /* ---------- Header / Hero ---------- */
-    .hero {
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-        padding: 42px 44px;
-        border-radius: 24px;
-        color: white;
-        margin-bottom: 28px;
-        box-shadow: 0 12px 30px -8px rgba(236, 13, 124, 0.45);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .hero::after {
-        content: "";
-        position: absolute;
-        top: -60px;
-        right: -60px;
-        width: 220px;
-        height: 220px;
-        background: rgba(255,255,255,0.08);
-        border-radius: 50%;
-    }
-
-    .hero .eyebrow {
-        display: inline-block;
-        background: rgba(255,255,255,0.18);
-        padding: 5px 14px;
-        border-radius: 999px;
-        font-size: 12.5px;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        margin-bottom: 14px;
-    }
-
-    .hero h1 {
-        font-size: 36px;
-        font-weight: 800;
-        margin: 0 0 8px 0;
-        line-height: 1.15;
-    }
-
-    .hero p {
-        font-size: 16px;
-        opacity: 0.92;
-        margin: 0;
-        max-width: 640px;
-    }
-
-    /* ---------- Tarjetas de sección ---------- */
-    .card {
-        background-color: var(--card-bg);
-        padding: 26px 28px;
-        border-radius: 18px;
-        border: 1px solid var(--border);
-        box-shadow: 0 2px 10px rgba(17, 24, 39, 0.04);
-        margin-bottom: 22px;
-    }
-
-    .card-title {
+ 
+    /* ---------- Barra superior ---------- */
+    .topbar {
+        background: var(--navy);
+        color: #ffffff;
+        padding: 16px 40px;
+        margin: 0 -100px 0 -100px;
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 10px;
-        font-size: 17px;
+    }
+ 
+    .topbar .brand {
         font-weight: 700;
-        color: var(--text-dark);
-        margin-bottom: 4px;
+        font-size: 15px;
+        letter-spacing: 0.04em;
     }
-
-    .card-subtitle {
+ 
+    .topbar .tag {
+        font-size: 11.5px;
+        background: rgba(255,255,255,0.12);
+        padding: 4px 12px;
+        border-radius: 4px;
+        color: #cdd6e3;
+    }
+ 
+    /* ---------- Hero ---------- */
+    .hero {
+        background: linear-gradient(180deg, var(--navy) 0%, var(--navy-dark) 100%);
+        color: #ffffff;
+        padding: 34px 40px 46px;
+        margin: 0 -100px 0 -100px;
+    }
+ 
+    .hero h1 {
+        font-size: 26px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+    }
+ 
+    .hero p {
         font-size: 13.5px;
-        color: var(--text-muted);
-        margin-bottom: 18px;
+        color: #c9d3e0;
+        max-width: 560px;
+        margin: 0;
+        line-height: 1.6;
     }
-
+ 
+    /* ---------- Contenedor que "sube" sobre el hero ---------- */
+    .lift {
+        margin-top: -22px;
+    }
+ 
+    /* ---------- Tarjetas ---------- */
+    .card {
+        background-color: #ffffff;
+        border-radius: 10px;
+        padding: 24px 26px;
+        box-shadow: 0 2px 10px rgba(11, 37, 69, 0.07);
+        border-top: 3px solid var(--teal);
+        margin-bottom: 20px;
+    }
+ 
+    .card h3 {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--navy);
+        margin: 0 0 16px 0;
+        font-weight: 700;
+    }
+ 
+    .card p.note {
+        font-size: 12.5px;
+        color: var(--sub);
+        margin-top: 4px;
+    }
+ 
     /* ---------- Banner informativo ---------- */
     .info-banner {
-        background: #fdf2f8;
-        border: 1px solid #fbcfe8;
-        border-left: 4px solid var(--primary);
-        border-radius: 14px;
-        padding: 16px 20px;
-        font-size: 14.5px;
-        color: #831843;
-        margin-bottom: 24px;
+        background: #ffffff;
+        border: 1px solid var(--line);
+        border-left: 4px solid var(--teal);
+        border-radius: 8px;
+        padding: 14px 20px;
+        font-size: 13.5px;
+        color: var(--ink);
+        margin-bottom: 22px;
     }
-
+ 
     /* ---------- Resultado ---------- */
     .resultado-box {
-        background: linear-gradient(135deg, #fff0f8 0%, #fdf2f8 100%);
-        border: 1.5px solid var(--primary-light);
-        border-radius: 22px;
-        padding: 36px;
+        background: #ffffff;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 26px;
         text-align: center;
-        margin-top: 8px;
-        margin-bottom: 26px;
-        box-shadow: 0 10px 28px -10px rgba(236, 13, 124, 0.35);
+        margin: 18px 0 26px 0;
+        box-shadow: 0 2px 10px rgba(11, 37, 69, 0.07);
     }
-
+ 
     .resultado-box .label {
-        color: var(--text-muted);
-        font-size: 13.5px;
-        font-weight: 600;
+        font-size: 11.5px;
         text-transform: uppercase;
         letter-spacing: 0.06em;
-        margin-bottom: 10px;
+        color: var(--sub);
+        margin-bottom: 8px;
+        font-weight: 700;
     }
-
+ 
     .resultado-box .valor {
-        color: var(--primary-dark);
-        font-size: 30px;
+        font-size: 22px;
         font-weight: 800;
+        color: var(--navy);
     }
-
-    /* ---------- Métricas dentro de tarjetas ---------- */
+ 
+    /* ---------- Métricas ---------- */
     div[data-testid="stMetric"] {
-        background-color: #fafafc;
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 14px 16px;
+        background-color: #fbfcfd;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px 14px;
     }
-
+ 
     div[data-testid="stMetricLabel"] {
-        font-size: 13px !important;
-        color: var(--text-muted) !important;
+        font-size: 12px !important;
+        color: var(--sub) !important;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
     }
-
+ 
     div[data-testid="stMetricValue"] {
-        font-size: 20px !important;
-        color: var(--text-dark) !important;
+        font-size: 18px !important;
+        color: var(--navy) !important;
         font-weight: 700 !important;
     }
-
+ 
     /* ---------- Inputs ---------- */
     div[data-baseweb="select"] > div {
-        border-radius: 12px !important;
-        border-color: var(--border) !important;
+        border-radius: 6px !important;
+        border-color: var(--line) !important;
     }
-
-    /* ---------- Botón principal ---------- */
+ 
+    label, .stSelectbox label {
+        font-size: 12.5px !important;
+        color: var(--sub) !important;
+        font-weight: 600 !important;
+    }
+ 
+    /* ---------- Botón ---------- */
     .stButton > button {
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        background: var(--teal);
         color: white;
-        border-radius: 14px;
-        height: 52px;
-        font-size: 16.5px;
+        border-radius: 6px;
+        height: 50px;
+        font-size: 15px;
         font-weight: 700;
         border: none;
-        box-shadow: 0 8px 18px -6px rgba(236, 13, 124, 0.55);
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-
+ 
     .stButton > button:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 10px 22px -6px rgba(236, 13, 124, 0.65);
+        background: var(--teal-dark);
         color: white;
     }
-
-    .stButton > button:active {
-        transform: translateY(0px);
-    }
-
-    /* ---------- Divisores ---------- */
+ 
     hr {
-        margin: 1.8rem 0 !important;
-        border-color: var(--border) !important;
+        margin: 1.6rem 0 !important;
+        border-color: var(--line) !important;
     }
-
-    /* ---------- Pie de página ---------- */
+ 
     .footer-note {
         text-align: center;
-        color: var(--text-muted);
-        font-size: 13px;
-        margin-top: 10px;
+        color: var(--sub);
+        font-size: 12.5px;
+        margin-top: 6px;
     }
-
+ 
 </style>
 """, unsafe_allow_html=True)
-
-
+ 
+ 
 # =========================================================
 # CARGAMOS EL MODELO
 # =========================================================
-
+ 
 modelo = pickle.load(open("modelo_random_forest.pkl", "rb"))
 label_encoder = pickle.load(open("label_encoder.pkl", "rb"))
-
-
+ 
+ 
 # =========================================================
 # CARGAMOS DATOS ZIP
 # =========================================================
-
+ 
 zip_data = pd.read_csv("zip_completo.csv")
-
+ 
 columnas_numericas = [c for c in zip_data.columns if c != "patient_zip3"]
-
+ 
 for columna in columnas_numericas:
     zip_data[columna] = pd.to_numeric(zip_data[columna], errors="coerce")
-
+ 
 zip_data["patient_zip3"] = pd.to_numeric(zip_data["patient_zip3"], errors="coerce")
-
+ 
 zips_disponibles = sorted(
     zip_data["patient_zip3"].dropna().astype(int).unique()
 )
-
-
+ 
+ 
 # =========================================================
-# ENCABEZADO (HERO)
+# BARRA SUPERIOR + HERO
 # =========================================================
-
+ 
 st.markdown("""
+<div class="topbar">
+    <div class="brand">MEDIPREDICT</div>
+    <div class="tag">Sistema académico</div>
+</div>
 <div class="hero">
-    <span class="eyebrow">🎗️ Sistema de apoyo clínico</span>
-    <h1>MediPredict</h1>
-    <p>Predicción asistida por Machine Learning del tipo de metástasis
-    en pacientes con cáncer de mama, combinando datos clínicos y
-    variables sociodemográficas por zona geográfica.</p>
+    <h1>Predicción del tipo de metástasis en cáncer de mama</h1>
+    <p>Herramienta de apoyo a la decisión clínica que combina información
+    clínica del paciente con variables sociodemográficas de su zona
+    geográfica mediante un modelo de Machine Learning.</p>
 </div>
 """, unsafe_allow_html=True)
-
-
+ 
+ 
 # =========================================================
-# INFORMACIÓN
+# CONTENIDO PRINCIPAL
 # =========================================================
-
+ 
+st.markdown('<div class="lift">', unsafe_allow_html=True)
+ 
 st.markdown("""
 <div class="info-banner">
-    💡 Ingrese los datos básicos del paciente. El sistema utilizará el
-    código <strong>ZIP3</strong> para obtener automáticamente las
-    variables sociodemográficas asociadas a esa zona.
+    Ingrese los datos básicos del paciente. El sistema utilizará el
+    código ZIP3 para obtener automáticamente las variables
+    sociodemográficas asociadas a esa zona.
 </div>
 """, unsafe_allow_html=True)
-
-
-# =========================================================
-# FORMULARIO
-# =========================================================
-
+ 
+ 
 col1, col2 = st.columns(2)
-
+ 
 with col1:
     st.markdown("""
     <div class="card">
-        <div class="card-title">👤 Información del paciente</div>
-        <div class="card-subtitle">Ingrese los datos básicos necesarios.</div>
+        <h3>Información del paciente</h3>
     """, unsafe_allow_html=True)
-
-    zip3 = st.selectbox("📍 Código ZIP3", zips_disponibles)
-    Edad = st.selectbox("🎂 Edad del paciente", list(range(0, 92)), index=50)
+ 
+    zip3 = st.selectbox("Código ZIP3", zips_disponibles)
+    Edad = st.selectbox("Edad del paciente", list(range(0, 92)), index=50)
     Payer = st.selectbox(
-        "💳 Tipo de pagador",
+        "Tipo de pagador",
         ["MEDICAID", "COMMERCIAL", "MEDICARE ADVANTAGE", "?"]
     )
-
+ 
     st.markdown("</div>", unsafe_allow_html=True)
-
+ 
 with col2:
     st.markdown("""
     <div class="card">
-        <div class="card-title">🔬 Información clínica</div>
-        <div class="card-subtitle">Seleccione el código correspondiente.</div>
+        <h3>Información clínica</h3>
     """, unsafe_allow_html=True)
-
+ 
     Diagnostico = st.selectbox(
-        "🧬 Código de diagnóstico de cáncer de mama",
+        "Código de diagnóstico de cáncer de mama",
         [
             "C50919", "C50411", "C50112", "C50212", "1749", "C50912",
             "C50512", "1744", "C50412", "C50812", "C50911", "C50312",
@@ -335,33 +331,31 @@ with col2:
             "C50421", "C50922", "C50921"
         ]
     )
-
+ 
     st.markdown("""
-        <p style="font-size:13px; color:#6b7280; margin-top:8px;">
-        📍 Las variables sociodemográficas se obtienen automáticamente
-        a partir del ZIP3 seleccionado.
-        </p>
+        <p class="note">Las variables sociodemográficas se obtienen
+        automáticamente a partir del ZIP3 seleccionado.</p>
     </div>
     """, unsafe_allow_html=True)
-
-
+ 
+ 
 # =========================================================
 # BOTÓN DE PREDICCIÓN
 # =========================================================
-
+ 
 st.write("")
-predecir = st.button("🔮 REALIZAR PREDICCIÓN", use_container_width=True)
-
+predecir = st.button("REALIZAR PREDICCIÓN", use_container_width=True)
+ 
 if predecir:
-
+ 
     datos_zip = zip_data[zip_data["patient_zip3"] == zip3]
-
+ 
     if datos_zip.empty:
-        st.error(f"❌ El ZIP3 {zip3} no se encuentra en la base de datos.")
+        st.error(f"El ZIP3 {zip3} no se encuentra en la base de datos.")
         st.stop()
-
+ 
     datos_zip = datos_zip.iloc[0]
-
+ 
     datos = [[
         Payer,
         Edad,
@@ -403,7 +397,7 @@ if predecir:
         datos_zip["veteran"],
         datos_zip["Ozone"]
     ]]
-
+ 
     columnas = [
         "payer_type", "patient_age", "breast_cancer_diagnosis_code",
         "population", "density", "age_median", "age_60s", "age_70s",
@@ -419,59 +413,62 @@ if predecir:
         "race_other", "race_multiple", "hispanic", "disabled", "poverty",
         "limited_english", "veteran", "Ozone"
     ]
-
+ 
     data = pd.DataFrame(datos, columns=columnas)
-
+ 
     Y_pred = modelo.predict(data)
     resultado = label_encoder.inverse_transform(Y_pred)
-
-    st.success("✅ Predicción realizada correctamente")
-
+ 
+    st.success("Predicción realizada correctamente")
+ 
     st.markdown(f"""
     <div class="resultado-box">
         <div class="label">Resultado de la predicción</div>
-        <div class="valor">🎗️ {resultado[0]}</div>
+        <div class="valor">{resultado[0]}</div>
     </div>
     """, unsafe_allow_html=True)
-
+ 
     # ---------------- Datos utilizados ----------------
-    st.markdown('<div class="card"><div class="card-title">📋 Datos utilizados</div>', unsafe_allow_html=True)
-
+    st.markdown('<div class="card"><h3>Datos utilizados</h3>', unsafe_allow_html=True)
+ 
     c1, c2, c3, c4 = st.columns(4)
     with c1:
-        st.metric("📍 ZIP3", zip3)
+        st.metric("ZIP3", zip3)
     with c2:
-        st.metric("🎂 Edad", Edad)
+        st.metric("Edad", Edad)
     with c3:
-        st.metric("💳 Pagador", Payer)
+        st.metric("Pagador", Payer)
     with c4:
-        st.metric("🧬 Diagnóstico", Diagnostico)
-
+        st.metric("Diagnóstico", Diagnostico)
+ 
     st.markdown("</div>", unsafe_allow_html=True)
-
+ 
     # ---------------- Info sociodemográfica ----------------
-    st.markdown('<div class="card"><div class="card-title">📊 Información sociodemográfica del ZIP3</div>', unsafe_allow_html=True)
-
+    st.markdown('<div class="card"><h3>Información sociodemográfica del ZIP3</h3>', unsafe_allow_html=True)
+ 
     c1, c2 = st.columns(2)
-
+ 
     with c1:
         poblacion = datos_zip["population"]
-        st.metric("👥 Población", f"{poblacion:,.0f}" if pd.notna(poblacion) else "No disponible")
-
+        st.metric("Población", f"{poblacion:,.0f}" if pd.notna(poblacion) else "No disponible")
+ 
     with c2:
         densidad = datos_zip["density"]
-        st.metric("🏙️ Densidad", f"{densidad:,.2f}" if pd.notna(densidad) else "No disponible")
-
+        st.metric("Densidad", f"{densidad:,.2f}" if pd.notna(densidad) else "No disponible")
+ 
     st.markdown("</div>", unsafe_allow_html=True)
-
-
+ 
+st.markdown('</div>', unsafe_allow_html=True)  # cierre .lift
+ 
+ 
 # =========================================================
 # PIE DE PÁGINA
 # =========================================================
-
+ 
 st.divider()
 st.markdown(
-    '<p class="footer-note">🎗️ MediPredict · Sistema académico de predicción '
+    '<p class="footer-note">MediPredict · Sistema académico de predicción '
     'basado en Machine Learning · Random Forest</p>',
     unsafe_allow_html=True
 )
+ 
