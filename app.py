@@ -306,7 +306,7 @@ with col1:
     Edad = st.selectbox("Edad del paciente", list(range(0, 92)), index=50)
     Payer = st.selectbox(
         "Tipo de pagador",
-        ["MEDICAID", "COMMERCIAL", "MEDICARE ADVANTAGE", "?"]
+        ["MEDICAID", "COMMERCIAL", "MEDICARE ADVANTAGE"]
     )
  
     st.markdown("</div>", unsafe_allow_html=True)
