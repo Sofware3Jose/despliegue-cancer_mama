@@ -11,7 +11,7 @@ import pickle
 
 st.set_page_config(
     page_title="MediPredict | Cáncer de Mama",
-    page_icon="",
+    page_icon="🎗️",
     layout="wide"
 )
 
@@ -127,8 +127,14 @@ label_encoder = pickle.load(
 # CARGAMOS DATOS ZIP
 # =========================================================
 
-zip_data = pd.read_csv("zip_completo.csv")
+zip_data = pd.read_csv(
+    "zip_completo.csv"
+)
 
+
+# =========================================================
+# CONVERTIMOS VARIABLES NUMÉRICAS
+# =========================================================
 
 columnas_numericas = [
     columna
@@ -148,6 +154,18 @@ for columna in columnas_numericas:
 zip_data["patient_zip3"] = pd.to_numeric(
     zip_data["patient_zip3"],
     errors="coerce"
+)
+
+
+# =========================================================
+# ZIP DISPONIBLES
+# =========================================================
+
+zips_disponibles = sorted(
+    zip_data["patient_zip3"]
+    .dropna()
+    .astype(int)
+    .unique()
 )
 
 
@@ -182,7 +200,7 @@ st.markdown(
 st.info(
     "💡 Ingrese los datos básicos del paciente. "
     "El sistema utilizará el código ZIP3 para obtener "
-    "automáticamente las variables socioeconómicas "
+    "automáticamente las variables sociodemográficas "
     "asociadas a esa zona."
 )
 
@@ -206,31 +224,39 @@ with col1:
         "Ingrese los datos básicos necesarios."
     )
 
-    zip3 = st.number_input(
+
+    # =====================================================
+    # ZIP3
+    # =====================================================
+
+    zip3 = st.selectbox(
         "📍 Código ZIP3",
-        min_value=0,
-        max_value=999,
-        value=100,
-        step=1,
-        help="Ingrese los primeros tres dígitos del código postal."
+        zips_disponibles
     )
 
 
-    Edad = st.number_input(
+    # =====================================================
+    # EDAD
+    # =====================================================
+
+    Edad = st.selectbox(
         "🎂 Edad del paciente",
-        min_value=0,
-        max_value=120,
-        value=50,
-        step=1
+        list(range(0, 92)),
+        index=50
     )
 
+
+    # =====================================================
+    # PAGADOR
+    # =====================================================
 
     Payer = st.selectbox(
         "💳 Tipo de pagador",
         [
             "MEDICAID",
             "COMMERCIAL",
-            "MEDICARE ADVANTAGE"
+            "MEDICARE ADVANTAGE",
+            "?"
         ]
     )
 
@@ -247,6 +273,10 @@ with col2:
         "Seleccione el código correspondiente."
     )
 
+
+    # =====================================================
+    # DIAGNÓSTICO
+    # =====================================================
 
     Diagnostico = st.selectbox(
         "🧬 Código de diagnóstico de cáncer de mama",
@@ -313,7 +343,7 @@ with col2:
 
 st.divider()
 
-st.subheader("📍 Variables socioeconómicas")
+st.subheader("📍 Variables sociodemográficas")
 
 st.write(
     "Estas variables no deben ser ingresadas manualmente. "
@@ -322,7 +352,7 @@ st.write(
 
 
 # =========================================================
-# BOTÓN
+# BOTÓN DE PREDICCIÓN
 # =========================================================
 
 st.divider()
@@ -341,6 +371,10 @@ if st.button(
     ]
 
 
+    # =====================================================
+    # VALIDAR ZIP
+    # =====================================================
+
     if datos_zip.empty:
 
         st.error(
@@ -351,105 +385,199 @@ if st.button(
         st.stop()
 
 
+    # =====================================================
+    # TOMAR REGISTRO DEL ZIP
+    # =====================================================
+
     datos_zip = datos_zip.iloc[0]
 
 
     # =====================================================
-    # DATOS
+    # CREAR DATOS PARA EL MODELO
     # =====================================================
 
     datos = [[
+
+        # -----------------------------
+        # DATOS INGRESADOS POR USUARIO
+        # -----------------------------
+
         Payer,
+
         Edad,
+
         Diagnostico,
+
+
+        # -----------------------------
+        # VARIABLES SOCIODEMOGRÁFICAS
+        # OBTENIDAS MEDIANTE EL ZIP3
+        # -----------------------------
+
         datos_zip["population"],
+
         datos_zip["density"],
+
         datos_zip["age_median"],
+
         datos_zip["age_60s"],
+
         datos_zip["age_70s"],
+
         datos_zip["married"],
+
         datos_zip["never_married"],
+
         datos_zip["family_size"],
+
         datos_zip["income_household_median"],
+
         datos_zip["income_household_10_to_15"],
+
         datos_zip["income_household_75_to_100"],
+
         datos_zip["income_household_100_to_150"],
+
         datos_zip["income_household_150_over"],
+
         datos_zip["income_household_six_figure"],
+
         datos_zip["income_individual_median"],
+
         datos_zip["home_ownership"],
+
         datos_zip["housing_units"],
+
         datos_zip["rent_median"],
+
         datos_zip["rent_burden"],
+
         datos_zip["education_less_highschool"],
+
         datos_zip["education_highschool"],
+
         datos_zip["education_bachelors"],
+
         datos_zip["education_college_or_above"],
+
         datos_zip["labor_force_participation"],
+
         datos_zip["unemployment_rate"],
+
         datos_zip["self_employed"],
+
         datos_zip["farmer"],
+
         datos_zip["race_white"],
+
         datos_zip["race_other"],
+
         datos_zip["race_multiple"],
+
         datos_zip["hispanic"],
+
         datos_zip["disabled"],
+
         datos_zip["poverty"],
+
         datos_zip["limited_english"],
+
         datos_zip["veteran"],
+
         datos_zip["Ozone"]
+
     ]]
 
 
     # =====================================================
-    # COLUMNAS
+    # NOMBRES DE LAS VARIABLES
     # =====================================================
 
     columnas = [
+
         "payer_type",
+
         "patient_age",
+
         "breast_cancer_diagnosis_code",
+
         "population",
+
         "density",
+
         "age_median",
+
         "age_60s",
+
         "age_70s",
+
         "married",
+
         "never_married",
+
         "family_size",
+
         "income_household_median",
+
         "income_household_10_to_15",
+
         "income_household_75_to_100",
+
         "income_household_100_to_150",
+
         "income_household_150_over",
+
         "income_household_six_figure",
+
         "income_individual_median",
+
         "home_ownership",
+
         "housing_units",
+
         "rent_median",
+
         "rent_burden",
+
         "education_less_highschool",
+
         "education_highschool",
+
         "education_bachelors",
+
         "education_college_or_above",
+
         "labor_force_participation",
+
         "unemployment_rate",
+
         "self_employed",
+
         "farmer",
+
         "race_white",
+
         "race_other",
+
         "race_multiple",
+
         "hispanic",
+
         "disabled",
+
         "poverty",
+
         "limited_english",
+
         "veteran",
+
         "Ozone"
+
     ]
 
 
     # =====================================================
-    # DATAFRAME
+    # CREAR DATAFRAME FINAL
     # =====================================================
 
     data = pd.DataFrame(
@@ -462,8 +590,14 @@ if st.button(
     # PREDICCIÓN
     # =====================================================
 
-    Y_pred = modelo.predict(data)
+    Y_pred = modelo.predict(
+        data
+    )
 
+
+    # =====================================================
+    # CONVERTIR RESULTADO
+    # =====================================================
 
     resultado = label_encoder.inverse_transform(
         Y_pred
@@ -478,6 +612,7 @@ if st.button(
         "✅ Predicción realizada correctamente"
     )
 
+
     st.markdown(
         """
         <div class="resultado">
@@ -485,13 +620,16 @@ if st.button(
         unsafe_allow_html=True
     )
 
+
     st.subheader(
         "🔬 Resultado de la predicción"
     )
 
+
     st.header(
         f"🎗️ {resultado[0]}"
     )
+
 
     st.markdown(
         "</div>",
@@ -503,7 +641,9 @@ if st.button(
     # DATOS UTILIZADOS
     # =====================================================
 
-    st.subheader("📋 Datos utilizados")
+    st.subheader(
+        "📋 Datos utilizados"
+    )
 
 
     c1, c2, c3, c4 = st.columns(4)
@@ -542,20 +682,25 @@ if st.button(
 
 
     # =====================================================
-    # INFORMACIÓN ZIP
+    # INFORMACIÓN SOCIODEMOGRÁFICA DEL ZIP
     # =====================================================
 
     st.subheader(
-        "📊 Información socioeconómica"
+        "📊 Información sociodemográfica del ZIP3"
     )
 
 
     c1, c2 = st.columns(2)
 
 
+    # =====================================================
+    # POBLACIÓN
+    # =====================================================
+
     with c1:
 
         poblacion = datos_zip["population"]
+
 
         if pd.notna(poblacion):
 
@@ -572,9 +717,14 @@ if st.button(
             )
 
 
+    # =====================================================
+    # DENSIDAD
+    # =====================================================
+
     with c2:
 
         densidad = datos_zip["density"]
+
 
         if pd.notna(densidad):
 
